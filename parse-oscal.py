@@ -1,30 +1,37 @@
-import json
 from oscal_catalog_parser import OSCALCatalogParser
 
-
-
 def main():
-    # Path to the OSCAL catalog schema
-    schema_path = 'schemas/oscal_catalog_schema.json'
-    
-    # Initialize the parser
-    parser = OSCALCatalogParser(schema_path)
+    # Path to the OSCAL catalog XML file
+    xml_file_path = 'catalogs/NIST_SP-800-53_rev5_catalog.xml'
 
-    # Path to the OSCAL catalog JSON file
-    json_file_path = 'catalogs/NIST_SP-800-53_rev5_catalog.json'
+    # Initialize the parser without schema_path
+    parser = OSCALCatalogParser()
 
-    # Load JSON data
-    with open(json_file_path, 'r') as json_file:
-        json_data = json.load(json_file)
-
-    # Parse the JSON data
-    parsed_data = parser.parse(json_data)
+    # Parse the XML data
+    parsed_data = parser.parse(xml_file_path)
 
     # Display the parsed data
     if parsed_data:
         print("Catalog ID:", parsed_data['catalog_id'])
         print("Title:", parsed_data['title'])
-        print("Control IDs:", parsed_data['control_ids'])
+        
+        # Iterate through the controls and print details
+        for control in parsed_data['controls']:
+            print("\nControl ID:", control['id'])
+            print("Title:", control['title'])
+            
+            # Print prose if available
+            if 'prose' in control:
+                print("Prose:", control['prose'])
+                
+            # Print statements if available
+            if 'statements' in control:
+                print("Statements:")
+                for statement_text in control['statements']:
+                    print(f"  {statement_text}")
+            else:
+                print("No statements available.")
+
     else:
         print("Failed to parse the OSCAL catalog.")
 
